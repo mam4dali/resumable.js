@@ -334,7 +334,10 @@ declare namespace Resumable {
      * An array of ResumableChunk items. You shouldn't need to dig into these.
      **/
     chunks: ResumableChunk[];
-
+    /**
+     * chunkSize for file.
+     **/
+    chunkSize: number;
 
     /**
      * Returns a float between 0 and 1 indicating the current upload progress of the file. If relative is true, the value is returned relative to all files in the Resumable.js instance.

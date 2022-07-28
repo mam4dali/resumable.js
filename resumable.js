@@ -116,7 +116,7 @@
       }
     };
     $.indexOf = function(array, obj) {
-    	if (array.indexOf) { return array.indexOf(obj); }     
+    	if (array.indexOf) { return array.indexOf(obj); }
     	for (var i = 0; i < array.length; i++) {
             if (array[i] === obj) { return i; }
         }
@@ -555,12 +555,13 @@
         _error = false;
         // Rebuild stack of chunks from file
         $.chunks = [];
+        $.chunkSize = $.getOpt('chunkSize');
         $._prevProgress = 0;
         var round = $.getOpt('forceChunkSize') ? Math.ceil : Math.floor;
-        var maxOffset = Math.max(round($.file.size/$.getOpt('chunkSize')),1);
+        var maxOffset = Math.max(round($.file.size/$.chunkSize),1);
         for (var offset=0; offset<maxOffset; offset++) {(function(offset){
-            $.chunks.push(new ResumableChunk($.resumableObj, $, offset, chunkEvent));
-            $.resumableObj.fire('chunkingProgress',$,offset/maxOffset);
+          $.chunks.push(new ResumableChunk($.resumableObj, $, offset, chunkEvent));
+          $.resumableObj.fire('chunkingProgress',$,offset/maxOffset);
         })(offset)}
         window.setTimeout(function(){
             $.resumableObj.fire('chunkingComplete',$);
@@ -671,9 +672,10 @@
       $.pendingRetry = false;
       $.preprocessState = 0; // 0 = unprocessed, 1 = processing, 2 = finished
       $.markComplete = false;
+      $.chunkSize = $.fileObj.chunkSize;
 
       // Computed properties
-      var chunkSize = $.getOpt('chunkSize');
+      var chunkSize = $.chunkSize;
       $.loaded = 0;
       $.startByte = $.offset*chunkSize;
       $.endByte = Math.min($.fileObjSize, ($.offset+1)*chunkSize);
@@ -715,7 +717,7 @@
           [
             // define key/value pairs for additional parameters
             ['chunkNumberParameterName', $.offset + 1],
-            ['chunkSizeParameterName', $.getOpt('chunkSize')],
+            ['chunkSizeParameterName', $.fileObj.chunkSize],
             ['currentChunkSizeParameterName', $.endByte - $.startByte],
             ['totalSizeParameterName', $.fileObjSize],
             ['typeParameterName', $.fileObjType],
@@ -808,11 +810,10 @@
         $.xhr.addEventListener('load', doneHandler, false);
         $.xhr.addEventListener('error', doneHandler, false);
         $.xhr.addEventListener('timeout', doneHandler, false);
-
         // Set up the basic query data from Resumable
         var query = [
           ['chunkNumberParameterName', $.offset + 1],
-          ['chunkSizeParameterName', $.getOpt('chunkSize')],
+          ['chunkSizeParameterName', $.fileObj.chunkSize],
           ['currentChunkSizeParameterName', $.endByte - $.startByte],
           ['totalSizeParameterName', $.fileObjSize],
           ['typeParameterName', $.fileObjType],
